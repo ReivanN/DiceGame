@@ -7,6 +7,10 @@ public class DragDropHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Camera mainCamera;
 
     public GameObject prefabToSpawn;
+    public Vector2 areaMin; // Минимальные координаты области
+    public Vector2 areaMax; // Максимальные координаты области
+    public GameObject areaVisualizerPrefab; // Префаб для визуализации области
+    private GameObject areaVisualizer;
 
     private RoundManager.RoundPhase currentPhase;
 
@@ -28,15 +32,15 @@ public class DragDropHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private void UpdateState(RoundManager.RoundPhase phase, int roundNumber)
     {
         currentPhase = phase;
+    }
 
-        switch (phase)
+    private void VisualizeArea()
+    {
+        if (areaVisualizerPrefab != null)
         {
-            case RoundManager.RoundPhase.Preparation:
-                break;
-            case RoundManager.RoundPhase.Battle:
-                break;
-            case RoundManager.RoundPhase.Scoring:
-                break;
+            areaVisualizer = Instantiate(areaVisualizerPrefab);
+            areaVisualizer.transform.position = new Vector3((areaMin.x + areaMax.x) / 2, 0.1f, (areaMin.y + areaMax.y) / 2);
+            areaVisualizer.transform.localScale = new Vector3(areaMax.x - areaMin.x, 1, areaMax.y - areaMin.y);
         }
     }
 
@@ -48,6 +52,7 @@ public class DragDropHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
 
         draggedObject = Instantiate(prefabToSpawn);
+        VisualizeArea();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -73,22 +78,20 @@ public class DragDropHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             return;
         }
 
-        GridSystem gridSystem = FindFirstObjectByType<GridSystem>();
-        if (gridSystem != null)
+        Vector3 position = draggedObject.transform.position;
+        if (position.x >= areaMin.x && position.x <= areaMax.x &&
+            position.z >= areaMin.y && position.z <= areaMax.y)
         {
-            Vector2 worldPosition2D = new Vector2(draggedObject.transform.position.x, draggedObject.transform.position.z);
-            Vector2 snappedPosition2D = gridSystem.GetSnappedPosition(worldPosition2D);
+            draggedObject.transform.position = new Vector3(position.x, position.y, position.z);
+        }
+        else
+        {
+            Destroy(draggedObject); // Уничтожаем объект, если он за пределами разрешенной области
+        }
 
-            // Проверяем, находится ли объект за пределами сетки
-            if (snappedPosition2D.x < 0 || snappedPosition2D.x >= gridSystem.width ||
-                snappedPosition2D.y < 0 || snappedPosition2D.y >= gridSystem.height)
-            {
-                return;
-            }
-            else
-            {
-                draggedObject.transform.position = new Vector3(snappedPosition2D.x, draggedObject.transform.position.y, snappedPosition2D.y);
-            }
+        if (areaVisualizer != null)
+        {
+            Destroy(areaVisualizer); // Уничтожаем визуализатор области
         }
     }
 }
