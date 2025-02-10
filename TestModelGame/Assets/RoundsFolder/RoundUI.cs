@@ -24,6 +24,12 @@ public class RoundUI : MonoBehaviour
         roundText.text = "Раунд: " + roundNumber;
         switch (phase)
         {
+            case RoundManager.RoundPhase.Gathering:
+                phaseText.text = "Фаза: Броски";
+                roundTimer = FindAnyObjectByType<RoundManager>().gatheringTime;
+                TimeDuration.text = "Броски" + roundTimer.ToString();
+                StartCoroutine(UpdateTimer());
+                break;
             case RoundManager.RoundPhase.Preparation:
                 phaseText.text = "Фаза: Подготовка";
                 roundTimer = FindAnyObjectByType<RoundManager>().preparationDuration;

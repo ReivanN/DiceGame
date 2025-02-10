@@ -2069,7 +2069,7 @@ GameObject:
   - component: {fileID: 559527608}
   - component: {fileID: 559527607}
   m_Layer: 5
-  m_Name: ButtonPlayer
+  m_Name: DiceRoller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

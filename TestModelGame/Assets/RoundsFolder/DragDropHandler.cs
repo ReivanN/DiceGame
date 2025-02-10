@@ -7,9 +7,9 @@ public class DragDropHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private Camera mainCamera;
 
     public GameObject prefabToSpawn;
-    public Vector2 areaMin; // Минимальные координаты области
-    public Vector2 areaMax; // Максимальные координаты области
-    public GameObject areaVisualizerPrefab; // Префаб для визуализации области
+    public Vector2 areaMin; 
+    public Vector2 areaMax;
+    public GameObject areaVisualizerPrefab;
     private GameObject areaVisualizer;
 
     private RoundManager.RoundPhase currentPhase;

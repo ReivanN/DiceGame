@@ -3,10 +3,11 @@ using System.Collections;
 
 public class RoundManager : MonoBehaviour
 {
-    public enum RoundPhase { Preparation, Battle, Scoring }
+    public enum RoundPhase { Gathering,Preparation, Battle, Scoring }
     public RoundPhase currentPhase = RoundPhase.Preparation;
 
     public int currentRound = 1;
+    public float gatheringTime = 30f;
     public float preparationDuration = 30f; 
     public float battleDuration = 60f;
     public float scoringDuration = 15f; 
@@ -23,6 +24,10 @@ public class RoundManager : MonoBehaviour
     {
         while (true)
         {
+            currentPhase = RoundPhase.Gathering;
+            OnPhaseStart?.Invoke(currentPhase, currentRound);
+            yield return new WaitForSeconds(gatheringTime);
+
             currentPhase = RoundPhase.Preparation;
             OnPhaseStart?.Invoke(currentPhase, currentRound);
             yield return new WaitForSeconds(preparationDuration);
