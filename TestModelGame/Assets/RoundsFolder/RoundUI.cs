@@ -21,31 +21,31 @@ public class RoundUI : MonoBehaviour
 
     private void UpdateUI(RoundManager.RoundPhase phase, int roundNumber)
     {
-        roundText.text = "Раунд: " + roundNumber;
+        roundText.text = "Round: " + roundNumber;
         switch (phase)
         {
             case RoundManager.RoundPhase.Gathering:
-                phaseText.text = "Фаза: Броски";
+                phaseText.text = "Phase: Gathering";
                 roundTimer = FindAnyObjectByType<RoundManager>().gatheringTime;
-                TimeDuration.text = "Броски" + roundTimer.ToString();
+                TimeDuration.text = "Time" + roundTimer.ToString();
                 StartCoroutine(UpdateTimer());
                 break;
             case RoundManager.RoundPhase.Preparation:
-                phaseText.text = "Фаза: Подготовка";
+                phaseText.text = "Phase: Preparation";
                 roundTimer = FindAnyObjectByType<RoundManager>().preparationDuration;
-                TimeDuration.text ="Время подготовки" + roundTimer.ToString();
+                TimeDuration.text ="Time" + roundTimer.ToString();
                 StartCoroutine(UpdateTimer());
                 break;
             case RoundManager.RoundPhase.Battle:
-                phaseText.text = "Фаза: Битва";
+                phaseText.text = "Phase: Battle";
                 roundTimer = FindAnyObjectByType<RoundManager>().battleDuration;
-                TimeDuration.text = "Время битвы" + roundTimer.ToString();
+                TimeDuration.text = "Time" + roundTimer.ToString();
                 StartCoroutine(UpdateTimer());
                 break;
             case RoundManager.RoundPhase.Scoring:
-                phaseText.text = "Фаза: Подсчет очков";
+                phaseText.text = "Phase: Scoring";
                 roundTimer = FindAnyObjectByType<RoundManager>().scoringDuration;
-                TimeDuration.text = "Время подсчета очков" + roundTimer.ToString();
+                TimeDuration.text = "Time" + roundTimer.ToString();
                 StartCoroutine(UpdateTimer());
                 break;
         }
@@ -56,7 +56,7 @@ public class RoundUI : MonoBehaviour
         while (roundTimer > 0)
         {
             roundTimer -= Time.deltaTime;
-            TimeDuration.text = "Время: " + Mathf.CeilToInt(roundTimer);
+            TimeDuration.text = "Time: " + Mathf.CeilToInt(roundTimer);
             yield return null;
         }
 

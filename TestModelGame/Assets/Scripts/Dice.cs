@@ -1,9 +1,9 @@
-using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections;
 
-public class DiceRollerWithEffect : MonoBehaviour
+public class Dice : MonoBehaviour
 {
     public TextMeshProUGUI resultTextPlayer1;
     public TextMeshProUGUI resultTextPlayer2;
@@ -13,8 +13,8 @@ public class DiceRollerWithEffect : MonoBehaviour
     public AudioClip playerDiceAudioClip;
     public Color finalColor = Color.green;
 
-    [SerializeField] public int totalScore; // Сумма двух кубиков
-
+    [SerializeField] public int totalScore;
+    private int attemptsLeft = 2; // Всего 2 попытки
     private RoundManager.RoundPhase currentPhase;
 
     void OnEnable()
@@ -30,28 +30,40 @@ public class DiceRollerWithEffect : MonoBehaviour
     private void UpdateState(RoundManager.RoundPhase phase, int roundNumber)
     {
         currentPhase = phase;
+        attemptsLeft = 2;
+        playerDiceButton.gameObject.SetActive(currentPhase == RoundManager.RoundPhase.Gathering);
+    }
+
+    private void UpdatStateAfterRoll(RoundManager.RoundPhase phase, int roundNumber)
+    {
+        currentPhase = phase;
+        currentPhase = RoundManager.RoundPhase.Preparation;
     }
 
     private void Update()
     {
-        if (currentPhase != RoundManager.RoundPhase.Gathering)
-        {
-            return;
-        }
-    }
-
-    public IEnumerator RollEffect()
-    {
-        if (currentPhase != RoundManager.RoundPhase.Gathering)
+        if (currentPhase != RoundManager.RoundPhase.Gathering || attemptsLeft <= 0)
         {
             playerDiceButton.gameObject.SetActive(false);
-            yield return new WaitForEndOfFrame();
+            return;
         }
         else
         {
             playerDiceButton.gameObject.SetActive(true);
         }
+    }
 
+    public void DiceP()
+    {
+        if (attemptsLeft > 0)
+        {
+            StartCoroutine(RollEffect());
+        }
+    }
+
+    public IEnumerator RollEffect()
+    {
+        attemptsLeft--; // Уменьшаем количество оставшихся попыток
         float elapsed = 0f;
 
         resultTextPlayer1.color = Color.black;
@@ -84,8 +96,20 @@ public class DiceRollerWithEffect : MonoBehaviour
         resultTextPlayer1.fontStyle = FontStyles.Bold;
         resultTextPlayer2.fontStyle = FontStyles.Bold;
 
-        totalScore = finalResult1 + finalResult2; // Суммируем результаты кубиков
+        totalScore = finalResult1 + finalResult2;
 
         Debug.Log($"Final result: {finalResult1} + {finalResult2} = {totalScore}");
+        
+        if (attemptsLeft <= 0)
+        {
+            EndDicePhase();
+        }
+    }
+
+    private void EndDicePhase()
+    {
+        Debug.Log("Dice phase ended. Proceeding to the next phase.");
+        playerDiceButton.gameObject.SetActive(false);
+        RoundManager.OnPhaseStart += UpdatStateAfterRoll;
     }
 }
