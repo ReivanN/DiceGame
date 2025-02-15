@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.Events;
 
 public class Dice : MonoBehaviour
 {
@@ -14,17 +15,22 @@ public class Dice : MonoBehaviour
     public Color finalColor = Color.green;
 
     [SerializeField] public int totalScore;
-    private int attemptsLeft = 2; // Всего 2 попытки
+    [SerializeField] public TextMeshProUGUI totalScoreText;
+    private int attemptsLeft = 2;
     private RoundManager.RoundPhase currentPhase;
+
+    private UnityAction OnGatheringEnd;
 
     void OnEnable()
     {
         RoundManager.OnPhaseStart += UpdateState;
+        OnGatheringEnd += UpdatStateAfterRoll;
     }
 
     void OnDisable()
     {
         RoundManager.OnPhaseStart -= UpdateState;
+        OnGatheringEnd -= UpdatStateAfterRoll;
     }
 
     private void UpdateState(RoundManager.RoundPhase phase, int roundNumber)
@@ -34,10 +40,9 @@ public class Dice : MonoBehaviour
         playerDiceButton.gameObject.SetActive(currentPhase == RoundManager.RoundPhase.Gathering);
     }
 
-    private void UpdatStateAfterRoll(RoundManager.RoundPhase phase, int roundNumber)
+    private void UpdatStateAfterRoll()
     {
-        currentPhase = phase;
-        currentPhase = RoundManager.RoundPhase.Preparation;
+        totalScoreText.text = totalScore.ToString();
     }
 
     private void Update()
@@ -63,7 +68,7 @@ public class Dice : MonoBehaviour
 
     public IEnumerator RollEffect()
     {
-        attemptsLeft--; // Уменьшаем количество оставшихся попыток
+        attemptsLeft--;
         float elapsed = 0f;
 
         resultTextPlayer1.color = Color.black;
@@ -102,14 +107,8 @@ public class Dice : MonoBehaviour
         
         if (attemptsLeft <= 0)
         {
-            EndDicePhase();
+            RoundManager.Instance.SkipPhase();
+            OnGatheringEnd?.Invoke();
         }
-    }
-
-    private void EndDicePhase()
-    {
-        Debug.Log("Dice phase ended. Proceeding to the next phase.");
-        playerDiceButton.gameObject.SetActive(false);
-        RoundManager.OnPhaseStart += UpdatStateAfterRoll;
     }
 }

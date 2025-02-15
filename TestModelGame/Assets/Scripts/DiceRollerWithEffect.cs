@@ -84,7 +84,7 @@ public class DiceRollerWithEffect : MonoBehaviour
         resultTextPlayer1.fontStyle = FontStyles.Bold;
         resultTextPlayer2.fontStyle = FontStyles.Bold;
 
-        totalScore = finalResult1 + finalResult2; // Суммируем результаты кубиков
+        totalScore = finalResult1 + finalResult2;
 
         Debug.Log($"Final result: {finalResult1} + {finalResult2} = {totalScore}");
     }
