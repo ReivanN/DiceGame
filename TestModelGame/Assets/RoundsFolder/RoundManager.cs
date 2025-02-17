@@ -68,6 +68,6 @@ public class RoundManager : MonoBehaviour
 
     public void SkipPhase()
     {
-        skipPhase = true; // Устанавливаем флаг пропуска фазы
+        skipPhase = true;
     }
 }

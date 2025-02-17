@@ -1,8 +1,10 @@
+using DG.Tweening;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using static System.Net.Mime.MediaTypeNames;
 
 public class RoundUI : MonoBehaviour
 {
@@ -24,8 +26,6 @@ public class RoundUI : MonoBehaviour
     private void UpdateUI(RoundManager.RoundPhase phase, int roundNumber)
     {
         roundText.text = "Round: " + roundNumber;
-
-        // Получаем время фазы напрямую из RoundManager
         switch (phase)
         {
             case RoundManager.RoundPhase.Gathering:
@@ -47,6 +47,7 @@ public class RoundUI : MonoBehaviour
         }
 
         TimeDuration.text = "Time: " + Mathf.CeilToInt(roundTimer);
+        
 
         if (timerCoroutine != null)
         {
@@ -63,6 +64,27 @@ public class RoundUI : MonoBehaviour
             roundTimer -= Time.deltaTime;
             TimeDuration.text = "Time: " + Mathf.CeilToInt(roundTimer);
             yield return null;
+        }
+    }
+    private bool get1;
+    private void Update()
+    {
+        AnimateTimer();
+    }
+
+    public void AnimateTimer() 
+    {
+        if (Mathf.CeilToInt(roundTimer) <= 10 && get1 == false)
+        {
+            TimeDuration.transform.DOScale(1.2f, 0.5f).SetLoops(-1, LoopType.Yoyo);
+            TimeDuration.DOColor(Color.red, 1f);
+            get1 = true;
+        }
+        else if (Mathf.CeilToInt(roundTimer) > 10)
+        {
+            DOTween.Kill(TimeDuration.transform);
+            TimeDuration.DOColor(Color.white, 1f);
+            get1 = false;
         }
     }
 
